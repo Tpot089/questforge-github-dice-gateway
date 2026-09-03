@@ -1,0 +1,43 @@
+name: QuestForge Dice Gateway
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  roll:
+    if: startsWith(github.event.issue.title, '[QF-ROLL]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Check out gateway
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Execute QuestForge roll gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python questforge-runtime/scripts/github_issue_roll.py "$GITHUB_EVENT_PATH" /tmp/questforge-receipt.md
+      - name: Publish verified receipt
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+        shell: bash
+        run: gh issue comment "$ISSUE_URL" --body-file /tmp/questforge-receipt.md
+      - name: Publish failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+        shell: bash
+        run: |
+          printf '%s\n' '### QuestForge execution failed' '' 'No dice result exists for this request. Inspect the GitHub Actions run logs.' > /tmp/questforge-failure.md
+          gh issue comment "$ISSUE_URL" --body-file /tmp/questforge-failure.md
