@@ -1,0 +1,16 @@
+{
+  "gateway_commit": "b8d3cd396e651c4ff066fa6d5bb8165db320d95d",
+  "issue": 3,
+  "request": {
+    "check": "NONCANONICAL INTEGRATION-TEST durable gateway",
+    "dc": 10,
+    "mode": "normal",
+    "notation": "d20",
+    "self_test": true,
+    "stakes": "NONCANONICAL INTEGRATION-TEST only. No campaign state or fictional consequence."
+  },
+  "request_sha256": "9485b9834f01538e246cc5e481184ec289a972f3705bce87fa7f8f09bfe224fd",
+  "run_attempt": "1",
+  "run_id": "34787883640",
+  "schema": 1
+}
