@@ -1,0 +1,29 @@
+name: NONCANONICAL INTEGRATION-TEST
+on:
+  push:
+    branches: [repair/durable-execution-receipts]
+    paths:
+      - '.github/workflows/noncanonical-integration.yml'
+      - 'tests/live_integration.py'
+      - 'questforge-runtime/scripts/**'
+permissions:
+  contents: write
+  issues: write
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -v
+      - name: Real NONCANONICAL gateway execution and retry
+        env:
+          GH_TOKEN: ${{ github.token }}
+          QF_INTEGRATION_BRANCH: repair/durable-execution-receipts
+        run: python tests/live_integration.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NONCANONICAL-INTEGRATION-TEST-evidence
+          path: integration-result.json

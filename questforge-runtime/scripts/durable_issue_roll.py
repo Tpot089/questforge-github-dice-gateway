@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Claim before RNG; persist result before comment. Ambiguous execution never rerolls."""
 import base64,hashlib,json,os,subprocess,sys,tempfile
+from urllib.parse import quote
 from pathlib import Path
 
 def encoded(x):return (json.dumps(x,sort_keys=True,indent=2)+'\n').encode()
@@ -14,16 +15,21 @@ def api(path,method='GET',payload=None):
         raise RuntimeError('GitHub durability operation failed: '+p.stderr)
     return json.loads(p.stdout)
 def get(repo,path):
-    r=api(f'repos/{repo}/contents/{path}')
+    ref=os.environ.get('QF_INTEGRATION_BRANCH')
+    r=api(f'repos/{repo}/contents/{path}'+('?ref='+quote(ref,safe='') if ref else ''))
     if r is None:return None
     return json.loads(base64.b64decode(r['content']))
 def create(repo,path,value):
     # No existing SHA supplied: GitHub rejects duplicate creation, providing a claim CAS.
-    return api(f'repos/{repo}/contents/{path}','PUT',{'message':'QuestForge durable '+path,'content':base64.b64encode(encoded(value)).decode()})
+    payload={'message':'QuestForge durable '+path,'content':base64.b64encode(encoded(value)).decode()}
+    if os.environ.get('QF_INTEGRATION_BRANCH'):payload['branch']=os.environ['QF_INTEGRATION_BRANCH']
+    return api(f'repos/{repo}/contents/{path}','PUT',payload)
 def execute(event,output,get_record=get,create_record=create,run=subprocess.run):
     issue=event['issue'];repo=event['repository']['full_name'];number=int(issue['number'])
     if issue.get('author_association') not in ['OWNER','MEMBER','COLLABORATOR']:raise RuntimeError('roll requests restricted to repository collaborators')
-    request=json.loads(issue['body']);request_hash=hashlib.sha256(encoded(request)).hexdigest();prefix=f'questforge-receipts/issue-{number}'
+    request=json.loads(issue['body'])
+    if os.environ.get('QF_INTEGRATION_BRANCH') and (request.get('self_test') is not True or 'NONCANONICAL' not in request.get('check','')):raise RuntimeError('integration branch accepts only explicit noncanonical self-tests')
+    request_hash=hashlib.sha256(encoded(request)).hexdigest();prefix=(f'NONCANONICAL-INTEGRATION-TEST/issue-{number}' if os.environ.get('QF_INTEGRATION_BRANCH') else f'questforge-receipts/issue-{number}')
     result=get_record(repo,prefix+'-result.json')
     if result:
         if result['request_sha256']!=request_hash:raise RuntimeError('issue body changed since execution')
