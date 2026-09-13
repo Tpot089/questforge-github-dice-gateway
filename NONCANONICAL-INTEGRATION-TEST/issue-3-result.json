@@ -1,0 +1,18 @@
+{
+  "gateway_commit": "b8d3cd396e651c4ff066fa6d5bb8165db320d95d",
+  "issue": 3,
+  "receipt_markdown": "### QuestForge verified execution\n\n`@Questforge [SELF-TEST NON-CANON] roll receipt 5b5bee59-9eeb-4cbe-8de8-6a773317f227: NONCANONICAL INTEGRATION-TEST durable gateway; 1d20 normal; rolls=[3]; kept=[3]; dropped=-; modifier=0; total=3; DC 10; failure`\n\n- GitHub issue: #3\n- Execution: GitHub Actions hosted runner\n- Roller: `questforge-runtime/scripts/roll_dice.py`\n- Gate: `questforge-runtime/scripts/roll_gate.py`\n- Authentic upstream roller blob: `e330690b473a72f8bd7c0ca33fa509b1d25a9a37`\n",
+  "request": {
+    "check": "NONCANONICAL INTEGRATION-TEST durable gateway",
+    "dc": 10,
+    "mode": "normal",
+    "notation": "d20",
+    "self_test": true,
+    "stakes": "NONCANONICAL INTEGRATION-TEST only. No campaign state or fictional consequence."
+  },
+  "request_sha256": "9485b9834f01538e246cc5e481184ec289a972f3705bce87fa7f8f09bfe224fd",
+  "run_attempt": "1",
+  "run_id": "34787883640",
+  "schema": 1,
+  "status": "executed"
+}

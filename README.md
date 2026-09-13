@@ -92,3 +92,10 @@ This is not cryptographic proof against a malicious repository owner. It is an a
 The dice roller originates from **QuestForge / `adrianmelic/codex-questforge`**, copyright © 2026 Adrián Melic, distributed under the MIT License. The gateway, hard execution protocol, GitHub Actions bridge, and generalized integration were developed by Trevor Pottie in 2026 while building a persistent AI-run tabletop campaign workflow.
 
 See `LICENSE`.
+
+
+## Durable execution repair
+
+The repair workflow creates an issue-specific durable claim in Git before invoking the unchanged authentic roller, then creates and reads back an immutable-by-protocol result file before posting a comment. Concurrent creation uses GitHub Contents create semantics (no prior SHA); duplicate claims fail. Reruns reuse an existing result and never execute RNG again. A claim without result is an explicit recovery block, including validation failures after claiming. Do not delete a claim to get a more convenient result. Collaborator-originated requests only; workflow needs contents:write for these receipt files.
+
+The owner can edit or rewrite repository history, so these are auditable records rather than proof against a malicious administrator. Test with `python -m unittest discover -s tests -v`. Transport and crash tests are mocked; no live roll was issued by this repair. Merge/deployment and one explicitly noncanonical integration self-test remain necessary before production certification. Existing request fields and upstream roller bytes are unchanged.

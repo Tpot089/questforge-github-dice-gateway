@@ -5,11 +5,14 @@ on:
     types: [opened]
 
 permissions:
-  contents: read
+  contents: write
   issues: write
 
 jobs:
   roll:
+    concurrency:
+      group: questforge-issue-${{ github.event.issue.number }}
+      cancel-in-progress: false
     if: startsWith(github.event.issue.title, '[QF-ROLL]')
     runs-on: ubuntu-latest
     timeout-minutes: 2
@@ -21,10 +24,12 @@ jobs:
         with:
           python-version: '3.12'
       - name: Execute QuestForge roll gate
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          python questforge-runtime/scripts/github_issue_roll.py "$GITHUB_EVENT_PATH" /tmp/questforge-receipt.md
+          python questforge-runtime/scripts/durable_issue_roll.py "$GITHUB_EVENT_PATH" /tmp/questforge-receipt.md
       - name: Publish verified receipt
         if: success()
         env:
@@ -39,5 +44,6 @@ jobs:
           ISSUE_URL: ${{ github.event.issue.html_url }}
         shell: bash
         run: |
-          printf '%s\n' '### QuestForge execution failed' '' 'No dice result exists for this request. Inspect the GitHub Actions run logs.' > /tmp/questforge-failure.md
+          printf '%s\n' '### QuestForge execution failed' '' 'Execution is incomplete or publication failed. Inspect durable claim/result records and run logs. Do not reroll this request.' > /tmp/questforge-failure.md
           gh issue comment "$ISSUE_URL" --body-file /tmp/questforge-failure.md
+
