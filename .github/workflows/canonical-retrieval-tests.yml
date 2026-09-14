@@ -1,0 +1,28 @@
+name: Canonical retrieval tests
+
+on:
+  push:
+    branches:
+      - feature/canonical-memory-retrieval
+    paths:
+      - 'questforge-runtime/scripts/canon_lookup.py'
+      - 'tests/test_canon_lookup.py'
+      - '.github/workflows/canonical-retrieval-tests.yml'
+  pull_request:
+    paths:
+      - 'questforge-runtime/scripts/canon_lookup.py'
+      - 'tests/test_canon_lookup.py'
+      - '.github/workflows/canonical-retrieval-tests.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -v
