@@ -1,0 +1,16 @@
+{
+  "gateway_commit": "865a72ddf3291b8e96b3e4ed1fc2ff58698b2276",
+  "issue": 4,
+  "request": {
+    "check": "What did Merrin Voss's discreet overnight search produce for independent Black Alder quarry and timber assessors by first light Oct. 7?",
+    "mode": "normal",
+    "mode_reason": "NPC network search occurred offscreen; no Ody skill modifier applies.",
+    "notation": "d20",
+    "self_test": false,
+    "stakes": "1-5: no suitable assessor ready; 6-10: one usable candidate/partial delay; 11-15: competent independent quarryman and timberman found and available, ordinary terms; 16-19: strong experienced pair with good references and availability; 20: exceptional pair with unusually strong relevant experience/reputation. Result establishes availability/quality only; identities, reasonable fees and backgrounds must remain consistent with the result and Redhaven provenance."
+  },
+  "request_sha256": "dfb02f745c7d080d27e960e98cd39a8a0615a269c930ef6acde16ff9d6cf9b54",
+  "run_attempt": "1",
+  "run_id": "34898804237",
+  "schema": 1
+}
